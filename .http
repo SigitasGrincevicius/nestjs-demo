@@ -1,0 +1,109 @@
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+
+# Basic request
+{{baseUrl}}
+
+### Get all tasks
+# @name getAllTasks
+GET {{baseUrl}}/tasks?limit=30&offset=0
+
+### Get all in progress tasks
+# @name getAllInProgress
+GET {{baseUrl}}/tasks?status=IN_PROGRESS
+
+### Get all with search query
+# @name getAllWithSearch
+GET {{baseUrl}}/tasks?search=Solo
+
+### Get all filtered by labels
+# @name getAllFilteredByLabels
+GET {{baseUrl}}/tasks?labels=urgent
+
+### Get all sorted
+# @name getAllSorted
+GET {{baseUrl}}/tasks?sortBy=title&sortOrder=ASC&limit=10
+
+### Get task by id
+GET {{baseUrl}}/tasks/{{taskId}}
+
+### create new task
+# @name createTask
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+
+{
+  "title": "Find the Millennium Falcon",
+  "description": "Track down Han Solo's ship in the Outer Rim",
+  "status": "OPEN",
+  "userId": "50b436cb-897f-463c-b370-911b79a47c4e",
+  "labels": [
+    { 
+      "name": "urgent"
+    }
+  ]
+}
+
+### Set the task id
+@taskId = {{ createTask.response.body.id }}
+
+### Invalid request, incorrect status
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+
+{
+  "title": "Find the Millennium Falcon",
+  "description": "Track down Han Solo's ship in the Outer Rim",
+  "status": "ZZZ"
+}
+
+### Update the task status
+PATCH {{baseUrl}}/tasks/{{taskId}}/status
+Content-Type: {{contentType}}
+
+{
+  "status": "IN_PROGRESS"
+}
+
+### Update the task (full update)
+PUT {{baseUrl}}/tasks/57cd4a56-307d-4931-90cb-66a4ece33e3a
+Content-Type: {{contentType}}
+
+{
+  "title": "Destroy the Death Starzzz",
+  "description": "Use the Force and fire proton torpedoes into the exhaust port",
+  "status": "OPEN"
+}
+
+### Update the task (partial update - status)
+PUT {{baseUrl}}/tasks/{{taskId}}
+Content-Type: {{contentType}}
+
+{
+  "status": "IN_PROGRESS"
+}
+
+### Delete task
+DELETE  {{baseUrl}}/tasks/{{taskId}}
+
+### Add specific labels to task
+# @name addLabels
+POST {{baseUrl}}/tasks/{{taskId}}/labels
+Content-Type: {{contentType}}
+
+[
+  {"name": "ASAP"},
+  {"name": "fix"}
+]
+
+### Remove specific labels
+# @name removeLabels
+DELETE {{baseUrl}}/tasks/{{taskId}}/labels
+Content-Type: {{contentType}}
+
+[
+  "ASAP",
+  "fix"
+]
