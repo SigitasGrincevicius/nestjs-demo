@@ -12,7 +12,9 @@ export const testConfig = {
     messagePrefix: '',
   },
   auth: {
-    jwt: 'secret_123',
-    expiresIn: '1m',
+    jwt: {
+      secret: 'secret_123',
+      expiresIn: '1m',
+    },
   },
 };

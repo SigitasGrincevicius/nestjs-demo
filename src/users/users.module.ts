@@ -9,6 +9,7 @@ import { PasswordService } from './password/password.service';
 import { UserService } from './user/user.service';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
+import { AuthGuard } from './auth.guard';
 
 @Module({
   imports: [
@@ -19,12 +20,15 @@ import { AuthController } from './auth/auth.controller';
       useFactory: (config: TypedConfigService) => ({
         secret: config.get<AuthConfig>('auth')?.jwt.secret,
         signOptions: {
-          expiresIn: parseInt(config.get<AuthConfig>('auth')?.jwt.expiresIn || '0', 10),
+          expiresIn: parseInt(
+            config.get<AuthConfig>('auth')?.jwt.expiresIn || '0',
+            10,
+          ),
         },
       }),
     }),
   ],
-  providers: [PasswordService, UserService, AuthService],
+  providers: [PasswordService, UserService, AuthService, AuthGuard],
   controllers: [AuthController],
 })
 export class UsersModule {}

@@ -1,4 +1,11 @@
-import { Body, ClassSerializerInterceptor, Controller, Post, SerializeOptions, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Post,
+  SerializeOptions,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CreateUserDto } from '../create-user.dto';
 import { AuthService } from './auth.service';
 import { User } from '../user.entity';
@@ -7,7 +14,7 @@ import { LoginResponse } from '../login.response';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
-@SerializeOptions({strategy: 'excludeAll'})
+@SerializeOptions({ strategy: 'excludeAll' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -19,10 +26,11 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<LoginResponse> {
-    const accessToken = await this.authService.login(loginDto.email, loginDto.password);
-    
-    return {
-      accessToken
-    }
+    const accessToken = await this.authService.login(
+      loginDto.email,
+      loginDto.password,
+    );
+
+    return new LoginResponse({ accessToken });
   }
 }
