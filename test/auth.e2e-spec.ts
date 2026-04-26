@@ -39,6 +39,18 @@ describe('AppController (e2e)', () => {
       });
   });
 
+  it('should allow public route access', async () => {
+    await request(testSetup.app.getHttpServer())
+      .post('/auth/register')
+      .send(testUser)
+      .expect(201);
+
+    await request(testSetup.app.getHttpServer())
+      .post('/auth/login')
+      .send(testUser)
+      .expect(201);
+  });
+
   it('/auth/register (POST) - duplicate email', async () => {
     await request(testSetup.app.getHttpServer())
       .post('/auth/register')
