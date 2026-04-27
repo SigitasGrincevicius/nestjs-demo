@@ -2,9 +2,9 @@ import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { TestSetup } from './utils/test-setup';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from 'src/users/user.entity';
-import { Role } from 'src/users/role.enum';
-import { PasswordService } from 'src/users/password/password.service';
+import { User } from './../src/users/user.entity';
+import { Role } from './../src/users/role.enum';
+import { PasswordService } from './../src/users/password/password.service';
 import { JwtService } from '@nestjs/jwt';
 
 describe('AppController (e2e)', () => {
@@ -38,7 +38,7 @@ describe('AppController (e2e)', () => {
     await userRepo.save({
       ...testUser,
       roles: [Role.ADMIN],
-      password: testSetup.app.get(PasswordService).hash(testUser.password),
+      password: await testSetup.app.get(PasswordService).hash(testUser.password),
     });
 
     const response = await request(testSetup.app.getHttpServer())
