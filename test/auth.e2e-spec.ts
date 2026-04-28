@@ -7,7 +7,7 @@ import { Role } from './../src/users/role.enum';
 import { PasswordService } from './../src/users/password/password.service';
 import { JwtService } from '@nestjs/jwt';
 
-describe('AppController (e2e)', () => {
+describe('Authentication & Authorization (e2e)', () => {
   let testSetup: TestSetup;
 
   beforeEach(async () => {
@@ -122,6 +122,32 @@ describe('AppController (e2e)', () => {
         expect(res.body.email).toBe(testUser.email);
         expect(res.body.name).toBe(testUser.name);
         expect(res.body).not.toHaveProperty('password');
+      });
+  });
+
+  it('/auth/admin (GET) - admin access', async () => {
+    const userRepo = testSetup.app.get(getRepositoryToken(User));
+
+    await userRepo.save({
+      ...testUser,
+      roles: [Role.ADMIN],
+      password: await testSetup.app
+        .get(PasswordService)
+        .hash(testUser.password),
+    });
+
+    const response = await request(testSetup.app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: testUser.email, password: testUser.password });
+
+    const token = response.body.accessToken;
+
+    return await request(testSetup.app.getHttpServer())
+      .get('/auth/admin')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.message).toBe('This is for admins only!');
       });
   });
 });
