@@ -38,7 +38,9 @@ describe('AppController (e2e)', () => {
     await userRepo.save({
       ...testUser,
       roles: [Role.ADMIN],
-      password: await testSetup.app.get(PasswordService).hash(testUser.password),
+      password: await testSetup.app
+        .get(PasswordService)
+        .hash(testUser.password),
     });
 
     const response = await request(testSetup.app.getHttpServer())
