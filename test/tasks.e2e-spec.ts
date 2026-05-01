@@ -11,7 +11,7 @@ describe('Tasks (e2e)', () => {
   const testUser = {
     email: 'test@example.com',
     password: 'Password123!',
-    name: 'Luke Skywwalker',
+    name: 'Luke Skywalker',
   };
 
   beforeEach(async () => {
