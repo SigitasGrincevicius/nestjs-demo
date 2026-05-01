@@ -26,6 +26,7 @@ import { FindTaskParams } from './find-task.params';
 import { PaginationParams } from '../common/pagination.params';
 import { PaginationResponse } from '../common/pagination.response';
 import type { AuthRequest } from '../users/auth.request';
+import { CurrentUserId } from '../users/decorators/current-user-id.decorator';
 
 @Controller('tasks')
 export class TasksController {
@@ -56,11 +57,12 @@ export class TasksController {
   @Post()
   public create(
     @Body() createTaskDto: CreateTaskDto,
-    @Request() request: AuthRequest,
+    // @Request() request: AuthRequest,
+    @CurrentUserId() userId: string,
   ): Promise<Task> {
     return this.tasksService.createTask({
       ...createTaskDto,
-      userId: request.user.sub,
+      userId,
     });
   }
 
