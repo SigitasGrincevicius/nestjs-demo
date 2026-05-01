@@ -12,6 +12,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './create-task.dto';
@@ -24,6 +25,7 @@ import { CreateTaskLabelDto } from './create-task-label.dto';
 import { FindTaskParams } from './find-task.params';
 import { PaginationParams } from '../common/pagination.params';
 import { PaginationResponse } from '../common/pagination.response';
+import type { AuthRequest } from '../users/auth.request';
 
 @Controller('tasks')
 export class TasksController {
@@ -52,8 +54,14 @@ export class TasksController {
   }
 
   @Post()
-  public create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksService.createTask(createTaskDto);
+  public create(
+    @Body() createTaskDto: CreateTaskDto,
+    @Request() request: AuthRequest,
+  ): Promise<Task> {
+    return this.tasksService.createTask({
+      ...createTaskDto,
+      userId: request.user.sub,
+    });
   }
 
   @Patch('/:id/status')

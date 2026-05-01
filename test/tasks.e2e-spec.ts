@@ -29,7 +29,7 @@ describe('Tasks (e2e)', () => {
 
     authToken = loginResponse.body.accessToken;
 
-    const profileResponse = await request(testSetup.app.getHttpServer())
+    await request(testSetup.app.getHttpServer())
       .get('/auth/profile')
       .set('Authorization', `Bearer ${authToken}`)
       .expect(200);
@@ -41,7 +41,6 @@ describe('Tasks (e2e)', () => {
         title: 'Complete Jedi Training',
         description: 'Train with Master Yoda on Dagobah.',
         status: TaskStatus.OPEN,
-        userId: profileResponse.body.id,
         labels: [{ name: 'rebellion' }],
       })
       .expect(201);
@@ -56,7 +55,23 @@ describe('Tasks (e2e)', () => {
     await testSetup.teardown();
   });
 
-  it('task has been created', () => {
-    expect(taskId).toBeDefined();
+  it('should not allow to access other users tasks', async () => {
+    const otherUser = { ...testUser, email: 'other@example.com' };
+    await request(testSetup.app.getHttpServer())
+      .post('/auth/register')
+      .send(otherUser)
+      .expect(201);
+
+    const loginResponse = await request(testSetup.app.getHttpServer())
+      .post('/auth/login')
+      .send(otherUser)
+      .expect(201);
+
+    const otherToken = loginResponse.body.accessToken;
+
+    await request(testSetup.app.getHttpServer())
+      .get(`/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${otherToken}`)
+      .expect(403);
   });
 });
