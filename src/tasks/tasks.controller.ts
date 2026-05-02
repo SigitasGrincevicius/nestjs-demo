@@ -29,6 +29,7 @@ import { PaginationResponse } from '../common/pagination.response';
 import type { AuthRequest } from '../users/auth.request';
 import { CurrentUserId } from '../users/decorators/current-user-id.decorator';
 import { string } from 'joi';
+import { userInfo } from 'os';
 
 @Controller('tasks')
 export class TasksController {
@@ -52,14 +53,19 @@ export class TasksController {
   }
 
   @Get('/:id')
-  public findOne(@Param() params: FindOneParams): Promise<Task> {
-    return this.findOneOrFail(params.id);
+  public async findOne(
+    @Param() params: FindOneParams,
+    @CurrentUserId() userId: string,
+  ): Promise<Task> {
+    const task = await this.findOneOrFail(params.id);
+
+    this.checkTaskOwnership(task, userId);
+    return task;
   }
 
   @Post()
   public create(
     @Body() createTaskDto: CreateTaskDto,
-    // @Request() request: AuthRequest,
     @CurrentUserId() userId: string,
   ): Promise<Task> {
     return this.tasksService.createTask({
