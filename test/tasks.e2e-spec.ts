@@ -76,7 +76,7 @@ describe('Tasks (e2e)', () => {
       .expect(403);
   });
 
-  it('should list users tasks only', async () => {
+  it('should list tasks that belong to user only', async () => {
     await request(testSetup.app.getHttpServer())
       .get(`/tasks`)
       .set('Authorization', `Bearer ${authToken}`)
