@@ -26,10 +26,7 @@ import { CreateTaskLabelDto } from './create-task-label.dto';
 import { FindTaskParams } from './find-task.params';
 import { PaginationParams } from '../common/pagination.params';
 import { PaginationResponse } from '../common/pagination.response';
-import type { AuthRequest } from '../users/auth.request';
 import { CurrentUserId } from '../users/decorators/current-user-id.decorator';
-import { string } from 'joi';
-import { userInfo } from 'os';
 
 @Controller('tasks')
 export class TasksController {
