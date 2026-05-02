@@ -23,6 +23,10 @@ import { AdminResponse } from '../admin.response';
 import { Role } from '../role.enum';
 import { Roles } from '../decorators/roles.decorator';
 
+/**
+ * Controller handling authentication and authorization endpoints.
+ * All responses are serialized using `excludeAll` strategy.
+ */
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ strategy: 'excludeAll' })
@@ -32,6 +36,11 @@ export class AuthController {
     private readonly userService: UserService,
   ) {}
 
+  /**
+   * Registers a new user account.
+   * @param createUserDto - Data required to create a new user.
+   * @returns The newly created user.
+   */
   @Post('register')
   @Public()
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {
@@ -39,6 +48,11 @@ export class AuthController {
     return user;
   }
 
+  /**
+   * Authenticates a user and returns a JWT access token.
+   * @param loginDto - The user's email and password credentials.
+   * @returns A response containing the JWT access token.
+   */
   @Post('login')
   @Public()
   async login(@Body() loginDto: LoginDto): Promise<LoginResponse> {
@@ -50,6 +64,12 @@ export class AuthController {
     return new LoginResponse({ accessToken });
   }
 
+  /**
+   * Returns the profile of the currently authenticated user.
+   * @param request - The authenticated request containing the user's JWT payload.
+   * @returns The user entity of the authenticated user.
+   * @throws NotFoundException if the user is not found.
+   */
   @Get('/profile')
   async profile(@Request() request: AuthRequest): Promise<User> {
     const user = await this.userService.findOne(request.user.sub);
@@ -61,6 +81,10 @@ export class AuthController {
     throw new NotFoundException();
   }
 
+  /**
+   * A restricted endpoint accessible only to users with the Admin role.
+   * @returns An admin-only response message.
+   */
   @Get('admin')
   @Roles(Role.ADMIN)
   async adminOnly(): Promise<AdminResponse> {
