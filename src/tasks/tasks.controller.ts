@@ -27,10 +27,12 @@ import { PaginationParams } from '../common/pagination.params';
 import { PaginationResponse } from '../common/pagination.response';
 import { CurrentUserId } from '../users/decorators/current-user-id.decorator';
 
+/** Controller for managing tasks. All routes require authentication. */
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
+  /** Returns a paginated list of tasks belonging to the authenticated user. */
   @Get()
   public async findAll(
     @Query() filters: FindTaskParams,
@@ -51,6 +53,7 @@ export class TasksController {
     };
   }
 
+  /** Returns a single task by ID. Throws 404 if not found, 403 if not owned by the user. */
   @Get('/:id')
   public async findOne(
     @Param() params: FindOneParams,
@@ -62,6 +65,7 @@ export class TasksController {
     return task;
   }
 
+  /** Creates a new task assigned to the authenticated user. */
   @Post()
   public create(
     @Body() createTaskDto: CreateTaskDto,
@@ -73,6 +77,7 @@ export class TasksController {
     });
   }
 
+  /** Updates only the status field of a task. */
   @Patch('/:id/status')
   public async updateTaskStatus(
     @Param() params: FindOneParams,
@@ -84,6 +89,7 @@ export class TasksController {
     return this.tasksService.updateTask(task, { status: body.status });
   }
 
+  /** Fully updates a task's properties. Throws 400 if the status transition is invalid. */
   @Put('/:id')
   public async updateTask(
     @Param() params: FindOneParams,
@@ -102,6 +108,7 @@ export class TasksController {
     }
   }
 
+  /** Deletes a task. Returns 204 No Content on success. */
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   public async deleteTask(
@@ -113,6 +120,7 @@ export class TasksController {
     await this.tasksService.deleteTask(task);
   }
 
+  /** Adds one or more labels to a task, merging with existing labels. */
   @Post(':id/labels')
   async addLabels(
     @Param() { id }: FindOneParams,
@@ -124,6 +132,7 @@ export class TasksController {
     return await this.tasksService.addLabels(task, labels);
   }
 
+  /** Removes the specified labels from a task. Returns 204 No Content on success. */
   @Delete(':id/labels')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeLabels(
