@@ -53,7 +53,7 @@ export class TasksController {
     };
   }
 
-  /** Returns a single task by ID. Throws 404 if not found, 403 if not owned by the user. */
+  /** Returns single task by ID. Throws 404 if not found, 403 if not owned by the user. */
   @Get('/:id')
   public async findOne(
     @Param() params: FindOneParams,
